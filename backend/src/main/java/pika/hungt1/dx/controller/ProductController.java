@@ -1,38 +1,38 @@
 package pika.hungt1.dx.controller;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import pika.hungt1.dx.repository.ProductRepository;
 import pika.hungt1.dx.entity.Product;
-import pika.hungt1.dx.service.ProductService;
-
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "*") // Cho phép frontend truy cập
 public class ProductController {
-    private final ProductService service;
-
-    public ProductController(ProductService service) {
-        this.service = service;
-    }
+    @Autowired private ProductRepository productRepository;
 
     @GetMapping
-    public List<Product> getAll() {
-        return service.getAll();
+    public List<Product> all() { return productRepository.findAll(); }
+
+    @GetMapping("/{id}")
+    public Product get(@PathVariable Integer id) {
+        return productRepository.findById(id).orElseThrow(() -> new RuntimeException("Not found"));
     }
 
     @PostMapping
-    public Product create(@RequestBody Product product) {
-        return service.create(product);
+    public Product create(@RequestBody Product p) {
+        return productRepository.save(p);
     }
 
     @PutMapping("/{id}")
-    public Product update(@PathVariable Long id, @RequestBody Product product) {
-        return service.update(id, product);
+    public Product update(@PathVariable Integer id, @RequestBody Product in) {
+        Product p = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Not found"));
+        p.setName(in.getName()); p.setPrice(in.getPrice()); p.setStock(in.getStock()); p.setCategory(in.getCategory());
+        return productRepository.save(p);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        service.delete(id);
+    public void delete(@PathVariable Integer id) {
+        productRepository.deleteById(id);
     }
 }

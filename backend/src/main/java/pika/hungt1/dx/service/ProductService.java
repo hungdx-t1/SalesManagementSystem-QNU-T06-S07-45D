@@ -1,38 +1,41 @@
 package pika.hungt1.dx.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pika.hungt1.dx.entity.Product;
 import pika.hungt1.dx.repository.ProductRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService {
-    private final ProductRepository repo;
 
-    public ProductService(ProductRepository repo) {
-        this.repo = repo;
+    @Autowired
+    private ProductRepository productRepository;
+
+    // Lấy tất cả sản phẩm
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
     }
 
-    public List<Product> getAll() {
-        return repo.findAll();
+    // Lấy sản phẩm theo ID
+    public Optional<Product> getProductById(Integer id) {
+        return productRepository.findById(id);
     }
 
-    public Product create(Product product) {
-        return repo.save(product);
+    // Tạo mới hoặc cập nhật sản phẩm
+    public Product saveProduct(Product product) {
+        return productRepository.save(product);
     }
 
-    public Product update(Long id, Product updated) {
-        return repo.findById(id).map(p -> {
-            p.setName(updated.getName());
-            p.setPrice(updated.getPrice());
-            p.setStock(updated.getStock());
-            p.setCategory(updated.getCategory());
-            return repo.save(p);
-        }).orElseThrow(() -> new RuntimeException("Product not found"));
+    // Xóa sản phẩm theo ID
+    public void deleteProduct(Integer id) {
+        productRepository.deleteById(id);
     }
 
-    public void delete(Long id) {
-        repo.deleteById(id);
+    // Tìm theo tên sản phẩm
+    public List<Product> searchByName(String keyword) {
+        return productRepository.findByNameContainingIgnoreCase(keyword);
     }
 }
