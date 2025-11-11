@@ -1,0 +1,7 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/backend/.vs/backend/v17/.suo
+/backend/obj/Debug/
+/backend/obj/Debug/net9.0/backend.AssemblyInfoInputs.cache
