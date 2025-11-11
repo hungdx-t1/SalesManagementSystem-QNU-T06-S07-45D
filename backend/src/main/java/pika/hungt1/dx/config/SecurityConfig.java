@@ -1,13 +1,13 @@
 package pika.hungt1.dx.config;
 
 import org.springframework.context.annotation.*;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -17,12 +17,12 @@ import pika.hungt1.dx.service.CustomUserDetailsService;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired private JwtTokenProvider jwtTokenProvider;
-    @Autowired private CustomUserDetailsService userDetailsService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final CustomUserDetailsService userDetailsService;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public SecurityConfig(JwtTokenProvider jwtTokenProvider, CustomUserDetailsService userDetailsService) {
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.userDetailsService = userDetailsService;
     }
 
     @Bean
@@ -33,25 +33,32 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // ✅ Vô hiệu hóa CSRF đúng cách với lambda
                 .csrf(AbstractHttpConfigurer::disable)
-
-                // ✅ Cho phép H2 Console và JWT hoạt động
-                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
-
-                // ✅ Stateless cho API JWT
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-                // ✅ Cấu hình quyền truy cập
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // ✅ Cho phép login/signup mà không cần token
                         .requestMatchers("/api/auth/**", "/h2-console/**").permitAll()
-                        .requestMatchers("/api/admin/**").hasAuthority("admin")
+                        // ✅ Cho phép test /api/users và /api/categories
+                        .requestMatchers("/api/users/**", "/api/categories/**").permitAll()
+                        // ✅ Các route khác cần xác thực
                         .anyRequest().authenticated()
                 )
-
-                // ✅ Thêm bộ lọc JWT trước UsernamePasswordAuthenticationFilter
+                // ✅ Thêm filter JWT vào chuỗi xử lý
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
+        // Cho phép mở console H2
+        http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
+
         return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 }
