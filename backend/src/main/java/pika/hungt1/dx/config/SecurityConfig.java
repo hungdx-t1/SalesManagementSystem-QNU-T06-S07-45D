@@ -2,6 +2,8 @@ package pika.hungt1.dx.config;
 
 import org.springframework.context.annotation.*;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,7 +21,9 @@ public class SecurityConfig {
     @Autowired private CustomUserDetailsService userDetailsService;
 
     @Bean
-    public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
@@ -28,18 +32,26 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeRequests()
-                .antMatchers("/api/auth/**").permitAll()
-                .antMatchers("/h2-console/**").permitAll()
-                .antMatchers("/api/admin/**").hasAuthority("admin")
-                .anyRequest().authenticated();
+        http
+                // ✅ Vô hiệu hóa CSRF đúng cách với lambda
+                .csrf(AbstractHttpConfigurer::disable)
 
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-        http.headers().frameOptions().disable();
+                // ✅ Cho phép H2 Console và JWT hoạt động
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+
+                // ✅ Stateless cho API JWT
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // ✅ Cấu hình quyền truy cập
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/**", "/h2-console/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasAuthority("admin")
+                        .anyRequest().authenticated()
+                )
+
+                // ✅ Thêm bộ lọc JWT trước UsernamePasswordAuthenticationFilter
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 }
-
