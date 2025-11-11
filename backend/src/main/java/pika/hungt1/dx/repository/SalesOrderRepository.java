@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import pika.hungt1.dx.entity.SalesOrder;
 
 @NullMarked
-public interface SalesOrderRepository extends JpaRepository<SalesOrder, Long> {
+public interface SalesOrderRepository extends JpaRepository<SalesOrder, Integer> {
 }

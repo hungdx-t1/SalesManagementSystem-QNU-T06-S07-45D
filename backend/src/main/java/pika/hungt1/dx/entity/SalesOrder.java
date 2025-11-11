@@ -2,38 +2,33 @@ package pika.hungt1.dx.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.time.Instant;
 
 @Entity
 @Table(name = "sales_orders")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Data @NoArgsConstructor @AllArgsConstructor
 public class SalesOrder {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    // liên kết tới khách hàng
     @ManyToOne
-    @JoinColumn(name = "customer_id")
+    @JoinColumn(name="customer_id")
     private Customer customer;
 
-    private LocalDateTime orderDate = LocalDateTime.now();
+    @Column(name="order_date")
+    private Instant orderDate = Instant.now();
 
+    @Column(name="total_amount")
     private BigDecimal totalAmount = BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus status = OrderStatus.PENDING;
+    private Status status = Status.pending;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SalesOrderItem> items;
 
-    public enum OrderStatus {
-        PENDING, PAID, CANCELLED
-    }
+    public enum Status { pending, paid, cancelled }
 }

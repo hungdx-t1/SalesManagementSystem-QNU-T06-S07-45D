@@ -1,31 +1,25 @@
 package pika.hungt1.dx.controller;
 
-import pika.hungt1.dx.dto.OrderRequest;
-import pika.hungt1.dx.entity.SalesOrder;
-import pika.hungt1.dx.service.SalesOrderService;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import pika.hungt1.dx.service.SalesOrderService;
+import pika.hungt1.dx.dto.CreateOrderRequest;
+import pika.hungt1.dx.entity.SalesOrder;
+import pika.hungt1.dx.entity.Payment;
+import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/api/orders")
-@CrossOrigin(origins = "*")
 public class SalesOrderController {
-
-    private final SalesOrderService service;
-
-    public SalesOrderController(SalesOrderService service) {
-        this.service = service;
-    }
+    @Autowired private SalesOrderService orderService;
 
     @PostMapping
-    public SalesOrder create(@RequestBody OrderRequest request) {
-        return service.createOrder(request);
+    public SalesOrder create(@RequestBody CreateOrderRequest req) {
+        return orderService.createOrder(req);
     }
 
-    @GetMapping
-    public List<SalesOrder> getAll() {
-        return service.getAll();
+    @PostMapping("/{id}/pay")
+    public SalesOrder pay(@PathVariable Integer id, @RequestParam BigDecimal amount, @RequestParam Payment.Method method) {
+        return orderService.payOrder(id, amount, method);
     }
 }
-

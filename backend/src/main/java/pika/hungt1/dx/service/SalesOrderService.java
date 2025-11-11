@@ -1,81 +1,74 @@
 package pika.hungt1.dx.service;
 
-import pika.hungt1.dx.dto.OrderRequest;
-import pika.hungt1.dx.entity.*;
-import pika.hungt1.dx.repository.*;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import pika.hungt1.dx.repository.*;
+import pika.hungt1.dx.entity.*;
+import pika.hungt1.dx.dto.CreateOrderRequest;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class SalesOrderService {
-    private final SalesOrderRepository orderRepo;
-    private final SalesOrderItemRepository itemRepo;
-    private final CustomerRepository customerRepo;
-    private final ProductRepository productRepo;
+    @Autowired private SalesOrderRepository orderRepo;
+    @Autowired private ProductRepository productRepo;
+    @Autowired private CustomerRepository customerRepo;
+    @Autowired private SalesOrderItemRepository itemRepo;
+    @Autowired private PaymentRepository paymentRepo;
 
-    public SalesOrderService(
-            SalesOrderRepository orderRepo,
-            SalesOrderItemRepository itemRepo,
-            CustomerRepository customerRepo,
-            ProductRepository productRepo
-    ) {
-        this.orderRepo = orderRepo;
-        this.itemRepo = itemRepo;
-        this.customerRepo = customerRepo;
-        this.productRepo = productRepo;
-    }
-
-    @Transactional
-    public SalesOrder createOrder(OrderRequest request) {
-        Customer customer = customerRepo.findById(request.getCustomerId())
+    public SalesOrder createOrder(CreateOrderRequest req) {
+        Customer customer = customerRepo.findById(req.getCustomerId())
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
 
-        SalesOrder order = SalesOrder.builder()
-                .customer(customer)
-                .status(SalesOrder.OrderStatus.PENDING)
-                .build();
-        order = orderRepo.save(order);
+        SalesOrder order = new SalesOrder();
+        order.setCustomer(customer);
+        order.setStatus(SalesOrder.Status.pending);
 
-        BigDecimal total = BigDecimal.ZERO;
         List<SalesOrderItem> items = new ArrayList<>();
+        BigDecimal total = BigDecimal.ZERO;
 
-        for (OrderRequest.OrderItemRequest itemReq : request.getItems()) {
-            Product product = productRepo.findById(itemReq.getProductId())
+        for (CreateOrderRequest.Item it : req.getItems()) {
+            Product p = productRepo.findById(it.getProductId())
                     .orElseThrow(() -> new RuntimeException("Product not found"));
-
-            if (product.getStock() < itemReq.getQuantity()) {
-                throw new RuntimeException("Not enough stock for product: " + product.getName());
+            if (p.getStock() < it.getQuantity()) {
+                throw new RuntimeException("Not enough stock for product id " + p.getId());
             }
+            // reduce stock
+            p.setStock(p.getStock() - it.getQuantity());
+            productRepo.save(p);
 
-            // Trừ tồn kho
-            product.setStock(product.getStock() - itemReq.getQuantity());
-            productRepo.save(product);
-
-            SalesOrderItem item = SalesOrderItem.builder()
-                    .order(order)
-                    .product(product)
-                    .quantity(itemReq.getQuantity())
-                    .unitPrice(itemReq.getUnitPrice())
-                    .build();
-
-            itemRepo.save(item);
-            items.add(item);
-
-            total = total.add(itemReq.getUnitPrice()
-                    .multiply(BigDecimal.valueOf(itemReq.getQuantity())));
+            SalesOrderItem soi = new SalesOrderItem();
+            soi.setProduct(p);
+            soi.setQuantity(it.getQuantity());
+            soi.setUnitPrice(p.getPrice());
+            soi.setOrder(order);
+            items.add(soi);
+            total = total.add(p.getPrice().multiply(new BigDecimal(it.getQuantity())));
         }
 
-        order.setItems(items);
         order.setTotalAmount(total);
-        return orderRepo.save(order);
+        order.setItems(items);
+        SalesOrder saved = orderRepo.save(order);
+        // save items (cascade may have saved them, but ensure)
+        itemRepo.saveAll(items);
+        return saved;
     }
 
-    public List<SalesOrder> getAll() {
-        return orderRepo.findAll();
+    public SalesOrder payOrder(Integer orderId, BigDecimal amount, Payment.Method method) {
+        SalesOrder order = orderRepo.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        Payment payment = new Payment();
+        payment.setOrder(order);
+        payment.setAmount(amount);
+        payment.setPaymentMethod(method);
+        paymentRepo.save(payment);
+
+        BigDecimal newTotalPaid = paymentRepo.findAllByOrder(order)
+                .stream().map(Payment::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        if (newTotalPaid.compareTo(order.getTotalAmount()) >= 0) {
+            order.setStatus(SalesOrder.Status.paid);
+            orderRepo.save(order);
+        }
+        return order;
     }
 }
-
