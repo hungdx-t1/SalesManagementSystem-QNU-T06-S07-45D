@@ -1,0 +1,39 @@
+.sidebar {
+  width: 220px;
+  background-color: #5c7dc3;
+  color: white;
+  height: 100vh;
+  padding: 20px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .logo {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    li {
+      padding: 10px 15px;
+      cursor: pointer;
+      border-radius: 5px;
+      &.active,
+      &:hover {
+        background-color: #7896d1;
+      }
+    }
+  }
+
+  .admin-link {
+    text-align: center;
+    a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  }
+}
