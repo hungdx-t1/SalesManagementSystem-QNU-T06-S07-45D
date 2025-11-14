@@ -6,6 +6,8 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.time.Instant;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "sales_orders")
