@@ -3,6 +3,8 @@ package pika.hungt1.dx.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "sales_order_items")
@@ -14,6 +16,7 @@ public class SalesOrderItem {
     @ManyToOne
     @JoinColumn(name="order_id")
     private SalesOrder order;
+
 
     @ManyToOne
     @JoinColumn(name="product_id")
