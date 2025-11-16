@@ -6,10 +6,10 @@ import { CommonModule, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-login',
-  standalone: true, // ⚡ standalone component
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, HttpClientModule, RouterModule, NgIf],
   templateUrl: './login.html',
-  styleUrl: './login.css'
+  styleUrls: ['./login.css']
 })
 export class Login {
   loginForm: FormGroup;
@@ -34,7 +34,20 @@ export class Login {
     this.http.post<{ token: string }>('http://localhost:8080/api/auth/login', loginData)
       .subscribe({
         next: (res) => {
-          localStorage.setItem('jwt', res.token);
+          const token = res.token;
+          localStorage.setItem('jwt', token);
+
+          // Decode payload từ JWT để lấy username, fullName, role
+          try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            localStorage.setItem('username', payload.sub || '');
+            localStorage.setItem('fullName', payload.fullName || '');
+            localStorage.setItem('role', payload.role || '');
+          } catch (err) {
+            console.error('Invalid JWT token', err);
+          }
+
+          // Chuyển về trang chủ
           this.router.navigate(['/']);
         },
         error: (err) => {

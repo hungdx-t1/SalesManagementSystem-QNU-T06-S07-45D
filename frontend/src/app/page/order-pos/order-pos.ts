@@ -6,11 +6,22 @@ import { Services } from '../../services';
 
 interface Order {
   id: number;
-  customer: { name: string; phone?: string };
+  customer: { id: number; name: string; phone?: string };
   totalAmount: number;
   status: string;
+  items: OrderItem[];
+  orderDate: string;
+}
+interface OrderItem {
+  product: { name: string; category: { name: string }; price: number};
+  quantity: number;
+  unitPrice: number;
+
 }
 
+interface OrderDetail extends Order {
+  items: OrderItem[];
+}
 @Component({
   selector: 'app-order-pos',
   standalone: true,
@@ -33,20 +44,26 @@ export class OrderPos implements OnInit {
 
   // Load danh sách đơn hàng
   loadOrders() {
-    const token = localStorage.getItem('jwt');
-    this.http.get<Order[]>(`${this.services.apiUrl}/api/orders`, {
-      headers: { Authorization: `Bearer ${token}` }
-    }).subscribe({
-      next: (data) => {
-        this.orders = data;
-        this.filteredOrders = [...data]; // Clone để giữ nguyên danh sách gốc
-        this.applyFilter(); // Áp dụng lọc nếu có từ khóa
-      },
-      error: (err) => console.error('Error fetching orders', err)
-    });
-  }
+  const token = localStorage.getItem('jwt');
+  this.http.get<Order[]>(`${this.services.apiUrl}/api/orders`, {
+    headers: { Authorization: `Bearer ${token}` }
+  }).subscribe({
+    next: (data) => {
+      // Tính tổngAmount từ items
+      this.orders = data.map(order => ({
+        ...order,
+        totalAmount: order.items
+          ? order.items.reduce((sum, item) => sum + item.quantity * item.product.price, 0)
+          : 0
+      }));
 
-  // Hàm tìm kiếm - chỉ gọi khi nhấn nút
+      this.filteredOrders = [...this.orders];
+      this.applyFilter();
+    },
+    error: (err) => console.error('Error fetching orders', err)
+  });
+}
+
   search() {
     this.applyFilter();
   }
@@ -100,5 +117,31 @@ export class OrderPos implements OnInit {
         alert('Thanh toán thất bại!');
       }
     });
+  }
+  selectedDetailOrder: OrderDetail | null = null;
+  purchasedItems: OrderItem[] = []; // sản phẩm đã mua
+
+  openDetailModal(order: Order) {
+  // Nếu order chưa có items, gán rỗng
+  this.selectedDetailOrder = {
+    ...order,
+    items: (order as any).items || []
+  };
+
+  // Tính tổng tiền dựa trên price, quantity
+  this.selectedDetailOrder.totalAmount = this.selectedDetailOrder.items
+    .reduce((sum, item) => sum + item.quantity * item.product.price, 0);
+
+  // Tổng hợp tất cả sản phẩm đã mua của khách hàng
+  this.purchasedItems = this.orders
+    .filter(o => o.customer.name === order.customer.name)
+    .flatMap(o => (o as any).items || []);
+}
+
+
+
+  closeDetailModal() {
+    this.selectedDetailOrder = null;
+    this.purchasedItems = [];
   }
 }

@@ -15,8 +15,8 @@
   background-color: white;
   padding: 2vh;
   border-radius: 1vh;
-  width: 90%;
-  max-width: 400px;
+  width: auto;
+
   box-shadow: 0 0 2vh rgba(0,0,0,0.3);
 }
 
@@ -42,4 +42,12 @@
 
 .table {
   padding: 15px;
+}
+.modal-chitiet-content {
+  background-color: white;
+  padding: 2vh;
+  border-radius: 1vh;
+  width: auto;
+  max-width: 400px;
+  box-shadow: 0 0 2vh rgba(0,0,0,0.3);
 }
