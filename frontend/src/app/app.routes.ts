@@ -1,18 +1,26 @@
-import { RouterModule, Routes } from '@angular/router';
+
+import { Routes } from '@angular/router';
+
 import { OrderPos } from './page/order-pos/order-pos';
 import { Login } from './login/login';
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { MainLayout } from './shared/layout/main-layout/main-layout';
+import { AuthLayout } from './shared/layout/auth-layout/auth-layout';
 
 export const routes: Routes = [
-  {path: 'order-pos', component: OrderPos},
-  {path: 'login', component: Login}
+  {
+    path: '',
+    component: MainLayout,
+    children: [
+      { path: 'order-pos', component: OrderPos }
+    ]
+  },
+  {
+    path: '',
+    component: AuthLayout,
+    children: [
+      { path: 'login', component: Login }
+    ]
+  },
+  { path: '**', redirectTo: 'login' }
 ];
-@NgModule({
-  declarations: [],
-  imports: [
-    BrowserModule,
-    RouterModule.forRoot(routes),
-    OrderPos,]
-  })
-  export class AppModule {}
+

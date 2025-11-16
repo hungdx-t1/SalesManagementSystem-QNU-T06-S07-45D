@@ -2,12 +2,12 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   standalone: true, // ⚡ standalone component
-  imports: [CommonModule, ReactiveFormsModule, HttpClientModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, HttpClientModule, RouterModule, NgIf],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
@@ -22,9 +22,7 @@ export class Login {
   ) {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
-      password: ['', Validators.required],
-      fullName: [''],
-      role: ['customer']
+      password: ['', Validators.required]
     });
   }
 
