@@ -1,7 +1,10 @@
-<div class="main-layout">
+<div class="page">
   <app-sidebar-component></app-sidebar-component>
-
-  <div class="page-content">
-    <router-outlet></router-outlet>
+  <div class="content">
+    <app-header-component></app-header-component>
+    <div class="body">
+      <router-outlet />
+      <!-- Nội dung danh sách khách hàng -->
+    </div>
   </div>
 </div>

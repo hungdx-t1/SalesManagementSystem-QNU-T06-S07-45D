@@ -1,8 +1,13 @@
-<header class="header">
-  <h2>Danh sách khách hàng</h2>
-  <div class="header-actions">
-    <input type="text" placeholder="🔍 search text" />
-    <button class="btn-create">+ Tạo mới</button>
-    <button (click)="goToLogin()">Đăng nhập</button>
+<header class="header d-flex justify-content-between align-items-center p-2">
+  <!-- Logo -->
+  <div class="header-logo">
+    <h3>My App</h3>
+  </div>
+
+  <!-- Thông tin người dùng -->
+  <div class="user-info d-flex gap-2 align-items-center">
+    <span *ngIf="fullName">Xin chào, {{ fullName }}</span>
+    <button *ngIf="!username" class="btn btn-sm btn-primary" (click)="goToLogin()">Đăng nhập</button>
+    <button *ngIf="username" class="btn btn-sm btn-outline-danger" (click)="logout()">Đăng xuất</button>
   </div>
 </header>

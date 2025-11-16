@@ -3,30 +3,17 @@
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
 
     <div>
-      <label>Username:</label>
+      <label>Username</label>
       <input type="text" formControlName="username">
     </div>
 
     <div>
-      <label>Password:</label>
+      <label>Password</label>
       <input type="password" formControlName="password">
-    </div>
-
-    <div>
-      <label>Full Name:</label>
-      <input type="text" formControlName="fullName">
-    </div>
-
-    <div>
-      <label>Role:</label>
-      <select formControlName="role">
-        <option value="customer">Customer</option>
-        <option value="admin">Admin</option>
-      </select>
     </div>
 
     <button type="submit" [disabled]="loginForm.invalid">Login</button>
   </form>
-
   <div *ngIf="errorMessage" style="color:red">{{ errorMessage }}</div>
+  <a routerLink="/register">Chưa có tài khoản, đăng ký ở đây.</a>
 </div>

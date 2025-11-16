@@ -1,4 +1,4 @@
-.login-container {
+.register-container {
   width: 60vh;
   max-width: 80vh;
   margin: 6vh auto;
@@ -9,18 +9,18 @@
   font-family: "Segoe UI", sans-serif;
 }
 
-.login-container h2 {
+.register-container h2 {
   text-align: center;
 
   font-size: 4vh;
   color: #333;
 }
 
-.login-container form div {
+.register-container form div {
   margin-bottom: 3vh;
 }
 
-.login-container label {
+.register-container label {
   display: block;
   font-weight: 600;
   color: #444;
@@ -28,8 +28,8 @@
   font-size: 2.2vh;
 }
 
-.login-container input,
-.login-container select {
+.register-container input,
+.register-container select {
   width: 100%;
   padding: 2vh;
   border: 0.3vh solid #ccc;
@@ -39,14 +39,14 @@
   background: #fafafa;
 }
 
-.login-container input:focus,
-.login-container select:focus {
+.register-container input:focus,
+.register-container select:focus {
   border-color: #007bff;
   box-shadow: 0 0 1vh rgba(0, 123, 255, 0.4);
   outline: none;
 }
 
-.login-container button {
+.register-container button {
   width: 100%;
   padding: 2.2vh;
   background: #007bff;
@@ -60,11 +60,11 @@
   transition: 0.25s;
 }
 
-.login-container button:hover {
+.register-container button:hover {
   background: #0056b3;
 }
 
-.login-container button:disabled {
+.register-container button:disabled {
   background: #8abafc;
   cursor: not-allowed;
 }
