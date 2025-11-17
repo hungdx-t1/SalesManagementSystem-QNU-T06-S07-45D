@@ -1,3 +1,4 @@
+
 import { Routes } from '@angular/router';
 import { OrderPos } from './page/order-pos/order-pos';
 import { SupplierComponent } from './page/supplier/supplier';
