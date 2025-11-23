@@ -31,11 +31,8 @@ export class Login {
 
     const loginData = this.loginForm.value;
 
-    this.http.post<{ token: string }>(
-      'http://localhost:8080/api/auth/login', 
-      loginData,
-      { withCredentials: false}
-    ).subscribe({
+    this.http.post<{ token: string }>('http://localhost:8080/api/auth/login', loginData)
+      .subscribe({
         next: (res) => {
           const token = res.token;
           localStorage.setItem('jwt', token);
@@ -51,7 +48,7 @@ export class Login {
           }
 
           // Chuyển về trang chủ
-          this.router.navigate(['/app']);
+          this.router.navigate(['/']);
         },
         error: (err) => {
           this.errorMessage = 'Đăng nhập thất bại!';

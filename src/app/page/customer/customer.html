@@ -1,0 +1,74 @@
+<div class="customer-container">
+
+  <h2>Quản lý khách hàng</h2>
+
+  <!-- ===== SEARCH ===== -->
+  <div class="search-box">
+  <input type="text"
+         [(ngModel)]="searchKeyword"
+         (ngModelChange)="search()"
+         placeholder="Tìm kiếm khách hàng...">
+  <button class="refresh" (click)="loadCustomers()">Tải lại</button>
+</div>
+  <!-- ===== CREATE NEW CUSTOMER ===== -->
+  <div class="form-create">
+    <h3>Thêm khách hàng mới</h3>
+    <input type="text" placeholder="Tên khách hàng" [(ngModel)]="newCustomer.name">
+    <input type="email" placeholder="Email" [(ngModel)]="newCustomer.email">
+    <input type="text" placeholder="Số điện thoại" [(ngModel)]="newCustomer.phone">
+    <button class="btn-create" (click)="createCustomer()">Thêm mới</button>
+  </div>
+
+  <!-- ===== TABLE LIST ===== -->
+  <table class="customer-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Tên</th>
+        <th>Email</th>
+        <th>SĐT</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let c of customers">
+        <td>{{ c.id }}</td>
+
+        <!-- If editing -->
+        <td *ngIf="editingCustomer?.id === c.id">
+          <input [(ngModel)]="editingCustomer.name">
+        </td>
+        <td *ngIf="editingCustomer?.id !== c.id">
+          {{ c.name }}
+        </td>
+
+        <td *ngIf="editingCustomer?.id === c.id">
+          <input [(ngModel)]="editingCustomer.email">
+        </td>
+        <td *ngIf="editingCustomer?.id !== c.id">
+          {{ c.email }}
+        </td>
+
+        <td *ngIf="editingCustomer?.id === c.id">
+          <input [(ngModel)]="editingCustomer.phone">
+        </td>
+        <td *ngIf="editingCustomer?.id !== c.id">
+          {{ c.phone }}
+        </td>
+
+        <td>
+          <ng-container *ngIf="editingCustomer?.id !== c.id">
+            <button (click)="startEdit(c)">Sửa</button>
+            <button class="btn-delete" (click)="deleteCustomer(c.id)">Xóa</button>
+          </ng-container>
+
+          <ng-container *ngIf="editingCustomer?.id === c.id">
+            <button class="btn-save" (click)="saveEdit()">Lưu</button>
+            <button class="btn-cancel" (click)="cancelEdit()">Hủy</button>
+          </ng-container>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
