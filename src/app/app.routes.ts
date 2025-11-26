@@ -7,6 +7,7 @@ import { AuthLayout } from './shared/layout/auth-layout/auth-layout';
 import { RegisterComponent } from './register/register';
 import { Customer } from './page/customer/customer';
 import { Product } from './page/product/product';
+import { SupplierComponent } from './page/supplier/supplier';
 
 export const routes: Routes = [
   {
@@ -14,6 +15,7 @@ export const routes: Routes = [
     component: MainLayout,
     children: [
       { path: 'order-pos', component: OrderPos },
+      { path: 'supplier', component: SupplierComponent },
       { path: 'customer', component: Customer},
       { path: 'product', component: Product}
     ]
