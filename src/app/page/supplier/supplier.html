@@ -1,30 +1,56 @@
 <div class="container">
   <h2>Quản lý nhà cung cấp</h2>
 
-  <!-- Form thêm mới -->
-  <form #supplierForm="ngForm" (ngSubmit)="addSupplier(supplierForm)">
-    <div>
-      <label for="name">Tên nhà cung cấp:</label>
-      <input type="text" id="name" name="name" [(ngModel)]="newSupplier.name" placeholder="Tên nhà cung cấp" required>
-    </div>
+  <!-- Nút mở cửa sổ -->
+  <button (click)="openModal()">Thêm nhà cung cấp</button>
 
-    <div>
-      <label for="email">Email:</label>
-      <input type="email" id="email" name="email" [(ngModel)]="newSupplier.email" placeholder="Email">
-    </div>
+  <!-- Popup Modal -->
+  <div class="modal" *ngIf="showModal">
+    <div class="modal-content">
 
-    <div>
-      <label for="phone">Điện thoại:</label>
-      <input type="text" id="phone" name="phone" [(ngModel)]="newSupplier.phone" placeholder="Số điện thoại">
-    </div>
+      <h3>Thêm nhà cung cấp</h3>
 
-    <div>
-      <label for="address">Địa chỉ:</label>
-      <input type="text" id="address" name="address" [(ngModel)]="newSupplier.address" placeholder="Địa chỉ">
-    </div>
+      <form #supplierForm="ngForm" (ngSubmit)="addSupplier(supplierForm)">
+        <div>
+          <label>Tên:</label>
+          <input type="text" name="name" [(ngModel)]="newSupplier.name" required />
+        </div>
 
-    <button type="submit">Thêm mới</button>
-  </form>
+        <div>
+          <label>Email:</label>
+          <input type="email" name="email" [(ngModel)]="newSupplier.email" />
+        </div>
+
+        <div>
+          <label>SĐT:</label>
+          <input type="text" name="phone" [(ngModel)]="newSupplier.phone" />
+        </div>
+
+        <div>
+          <label>Địa chỉ:</label>
+          <input type="text" name="address" [(ngModel)]="newSupplier.address" />
+        </div>
+
+        <div class="button-group">
+          <button type="submit">Lưu</button>
+          <button type="button" (click)="closeModal()">Đóng</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Thanh tìm kiếm -->
+  <div style="margin: 15px 0;">
+    <input 
+      type="text" 
+      placeholder="Tìm kiếm theo tên, email hoặc SĐT..."
+      [(ngModel)]="searchText"
+      (input)="filterSuppliers()"
+      style="width: 300px; padding: 6px;"
+    />
+  </div>
+
 
   <!-- Danh sách nhà cung cấp -->
   <table border="1" cellpadding="5" cellspacing="0" style="margin-top:20px; width:100%;">
@@ -39,7 +65,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let supplier of suppliers">
+      <tr *ngFor="let supplier of filteredSuppliers">
         <td>{{ supplier.id }}</td>
         <td>{{ supplier.name }}</td>
         <td>{{ supplier.email }}</td>

@@ -21,6 +21,10 @@ export interface Supplier {
 export class SupplierComponent {
   suppliers: Supplier[] = [];
   newSupplier: Supplier = { name: '' };
+  showModal: boolean = false;
+  searchText: string = '';
+  filteredSuppliers: Supplier[] = [];
+
 
   constructor(private services: Services, private http: HttpClient) {}
 
@@ -28,17 +32,37 @@ export class SupplierComponent {
     this.loadSuppliers();
   }
 
-  // Lấy danh sách nhà cung cấp
   loadSuppliers(): void {
-    const token = localStorage.getItem('jwt');
     this.http.get<Supplier[]>(`${this.services.apiUrl}/api/suppliers`)
       .subscribe({
-        next: data => this.suppliers = data,
+        next: data => {
+          this.suppliers = data;
+          this.filteredSuppliers = data; // hiển thị danh sách ban đầu
+        },
         error: err => console.error('Lỗi khi load suppliers', err)
       });
   }
 
-  // Thêm nhà cung cấp
+  filterSuppliers(): void {
+    const text = this.searchText.toLowerCase();
+
+    this.filteredSuppliers = this.suppliers.filter(s =>
+      s.name.toLowerCase().includes(text) ||
+      (s.email?.toLowerCase().includes(text)) ||
+      (s.phone?.toLowerCase().includes(text)) ||
+      (s.address?.toLowerCase().includes(text))
+    );
+  }
+
+
+  openModal(): void {
+    this.showModal = true;
+  }
+
+  closeModal(): void {
+    this.showModal = false;
+  }
+
   addSupplier(form: NgForm): void {
     if (!this.newSupplier.name) return;
 
@@ -47,13 +71,13 @@ export class SupplierComponent {
         next: () => {
           this.newSupplier = { name: '' };
           form.resetForm();
+          this.showModal = false;
           this.loadSuppliers();
         },
-        error: err => console.error('Lỗi khi thêm supplier', err)
+        error: err => console.error('Lỗi thêm supplier', err)
       });
   }
 
-  // Xóa nhà cung cấp
   deleteSupplier(id: number): void {
     if (!confirm('Bạn có chắc muốn xóa nhà cung cấp này không?')) return;
 
@@ -64,3 +88,4 @@ export class SupplierComponent {
       });
   }
 }
+
