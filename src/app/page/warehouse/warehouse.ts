@@ -57,13 +57,14 @@ export class Warehouse implements OnInit {
     this.filteredProducts = this.products.filter(p => p.name.toLowerCase().includes(term));
   }
 
-  // Nhập kho
-  openImportModal(product: Product) {
-    this.importProduct = product;
+  // Thay đổi openImportModal để không cần product
+  openImportModal() {
+    this.importProduct = this.products[0] || null; // mặc định chọn sản phẩm đầu tiên
     this.selectedSupplier = this.suppliers[0] || null;
     this.importQuantity = 0;
     this.importCost = 0;
   }
+
 
   closeImportModal() { this.importProduct = null; }
 
