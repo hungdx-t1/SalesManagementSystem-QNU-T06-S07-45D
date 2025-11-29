@@ -46,7 +46,13 @@
 <!-- Modal nhập kho -->
 <div class="modal" *ngIf="importProduct">
   <div class="modal-content">
-    <h3>Nhập kho: {{ importProduct.name }}</h3>
+    <h3>Nhập kho</h3>
+
+    <label>Sản phẩm:</label>
+    <select class="form-select mt-1 mb-2" [(ngModel)]="importProduct">
+      <option *ngFor="let p of products" [ngValue]="p">{{ p.name }}</option>
+    </select>
+
     <label>Nhà cung cấp:</label>
     <select class="form-select mt-1 mb-2" [(ngModel)]="selectedSupplier">
       <option *ngFor="let s of suppliers" [ngValue]="s">{{ s.name }}</option>
@@ -58,12 +64,13 @@
     <label>Tổng chi phí:</label>
     <input type="number" class="form-control mt-1 mb-2" [(ngModel)]="importCost">
 
-    <div class="modal-actions mt-3">
+    <div class="modal-actions">
       <button class="btn btn-secondary" (click)="closeImportModal()">Hủy</button>
       <button class="btn btn-primary" (click)="confirmImport()">Xác nhận</button>
     </div>
   </div>
 </div>
+
 
 <!-- Modal xem lịch sử nhập kho -->
 <div class="modal" *ngIf="historyProduct">
