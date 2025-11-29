@@ -1,0 +1,86 @@
+<div class="product-page">
+    
+  <div class="top-actions">
+
+  <input class="search-input"
+         type="text"
+         placeholder="Tìm sản phẩm..."
+         [(ngModel)]="searchKeyword"
+         (input)="onSearch()" />
+
+  <button class="btn green" (click)="openCreateCategory()">Thêm danh mục</button>
+  <button class="btn red" (click)="openCreateProduct()">Thêm sản phẩm</button>
+  <button class="btn dark" *ngIf="showProductList" (click)="backToCategories()">Trở lại</button>
+
+</div>
+
+
+  
+  <!-- CATEGORY LIST -->
+  <div class="category-tabs" *ngIf="!showProductList">
+    <div *ngFor="let cat of categories" class="tab" (click)="openProducts(cat)">
+      {{ cat.name }}
+      <button (click)="openEditCategory(cat); $event.stopPropagation()">✏</button>
+      <button (click)="deleteCategory(cat.id); $event.stopPropagation()">🗑</button>
+    </div>
+  </div>
+
+  <!-- PRODUCT LIST -->
+  <div class="category-tabs" *ngIf="showProductList">
+    <div class="tab title">{{ selectedCategoryName }}</div>
+  </div>
+
+  <div class="category-tabs product-items" *ngIf="showProductList">
+    <div *ngFor="let p of filteredProducts" class="tab product-box">
+      {{ p.name }}
+      <button (click)="openEditProduct(p)">✏</button>
+      <button (click)="deleteProduct(p.id)">🗑</button>
+    </div>
+  </div>
+
+  <!-- POPUP PRODUCT -->
+  <div class="modal" *ngIf="showProductForm">
+    <div class="modal-box">
+      <h2>{{ isEditingProduct ? 'Sửa sản phẩm' : 'Thêm sản phẩm' }}</h2>
+
+      <form (ngSubmit)="submitProduct()">
+
+        <label>Tên:</label>
+        <input type="text" [(ngModel)]="productForm.name" name="name" required />
+
+        <label>Giá:</label>
+        <input type="number" [(ngModel)]="productForm.price" name="price" required />
+
+        <label>Số lượng:</label>
+        <input type="number" [(ngModel)]="productForm.stock" name="quantity" required />
+
+        <label>Danh mục:</label>
+        <select [(ngModel)]="productForm.categoryId" name="categoryId" required>
+          <option *ngFor="let c of categories" [value]="c.id">{{ c.name }}</option>
+        </select>
+
+        <button class="btn green full" type="submit">{{ isEditingProduct ? 'Cập nhật' : 'Tạo' }}</button>
+        <button class="btn red full" type="button" (click)="closeProductForm()">Hủy</button>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- POPUP CATEGORY -->
+  <div class="modal" *ngIf="showCategoryForm">
+    <div class="modal-box">
+      <h2>{{ isEditingCategory ? 'Sửa danh mục' : 'Thêm danh mục' }}</h2>
+
+      <form (ngSubmit)="submitCategory()">
+
+        <label>Tên danh mục:</label>
+        <input type="text" [(ngModel)]="categoryForm.name" name="catName" required />
+
+        <button class="btn green full" type="submit">{{ isEditingCategory ? 'Cập nhật' : 'Tạo' }}</button>
+        <button class="btn red full" type="button" (click)="closeCategoryForm()">Hủy</button>
+
+      </form>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,53 @@
+.modal {
+  position: fixed; /* cố định trên toàn màn hình */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* đảm bảo nổi lên trên các phần khác */
+}
+
+.modal-content {
+  background-color: white;
+  padding: 2vh;
+  border-radius: 1vh;
+  width: auto;
+
+  box-shadow: 0 0 2vh rgba(0,0,0,0.3);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1vh;
+  margin-top: 2vh;
+}
+.form-control {
+  height: 45px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  padding: 0 12px;
+  font-size: 14px;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0,123,255,.25);
+}
+
+.table {
+  padding: 15px;
+}
+.modal-chitiet-content {
+  background-color: white;
+  padding: 2vh;
+  border-radius: 1vh;
+  width: auto;
+  max-width: 400px;
+  box-shadow: 0 0 2vh rgba(0,0,0,0.3);
+}
