@@ -1,0 +1,142 @@
+<div class="body d-flex justify-content-between align-items-center p-3">
+  <h2 class="title" style="text-align: left;">Danh sách đơn hàng</h2>
+  <div class="d-flex gap-2 align-items-center">
+    <!-- Ô tìm kiếm + Nút tìm kiếm -->
+  </div>
+</div>
+<div class="input-group" style="width: 300px;padding-left: 15px">
+  <input
+  type="text"
+  class="form-control"
+  placeholder="Nhập tên khách hàng"
+  [(ngModel)]="searchTerm"
+  (keyup.enter)="search()"
+  style="height: 5vh; text-align: center; font-size: 1rem;"
+>
+<button
+  class="btn btn-outline-primary"
+  (click)="search()"
+  style="height: 5vh; display: flex; align-items: center; justify-content: center;"
+>
+  Tìm kiếm
+</button>
+
+</div>
+<div class="table">
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>STT</th>
+        <th>Mã khách hàng</th>
+        <th>Tên khách hàng</th>
+        <th>Ngày tạo</th>
+        <th>Phương thức thanh toán</th>
+        <th>Tổng tiền</th>
+        <th>Trạng thái</th>
+        <th>Thao tác</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let o of filteredOrders; index as i">
+        <td>{{ i + 1 }}</td>
+        <td>{{ o.customer.id }}</td>
+        <td>{{ o.customer.name }}</td>
+        <td>{{ o.orderDate ? (o.orderDate | date:'dd/MM/yyyy HH:mm:ss') : 'Ko có ngày tạo' }}</td>
+
+        <td>
+          <span *ngIf="o.status !== 'pending'">{{ selectedPaymentMethod | titlecase }}</span>
+          <span *ngIf="o.status === 'pending'">Chưa thanh toán</span>
+        </td>
+
+       <td>{{ o.totalAmount | number:'1.0-2' }} VND</td>
+
+
+
+        <td>
+          <span [ngClass]="{
+            'status-pending': o.status === 'pending',
+            'status-success': o.status === 'completed',
+            'status-cancel': o.status === 'cancelled'
+          }">
+            {{ o.status | titlecase }}
+          </span>
+        </td>
+        <td style="display: flex; gap: 10px;">
+          <button *ngIf="o.status === 'pending'"
+                  class="btn btn-success btn-sm"
+                  (click)="openPaymentModal(o)">
+            Thanh toán
+          </button>
+
+          <button class="btn btn-info btn-sm" (click)="openDetailModal(o)">
+            Chi tiết
+          </button>
+</td>
+
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal thanh toán -->
+<div class="modal" *ngIf="selectedOrder">
+  <div class="modal-content">
+    <h3>Xác nhận thanh toán</h3>
+    <p><strong>Khách hàng:</strong> {{ selectedOrder.customer.name }}</p>
+    <p><strong>Tổng tiền:</strong> {{ selectedOrder.totalAmount | number:'1.0-2' }} VND</p>
+
+    <label>Phương thức thanh toán:</label>
+    <select [(ngModel)]="selectedPaymentMethod" class="form-select mt-2">
+      <option value="cash">Tiền mặt</option>
+      <option value="bank_transfer">Chuyển khoản</option>
+      <option value="ewallet">Ví điện tử</option>
+    </select>
+
+    <div class="modal-actions mt-3 d-flex gap-2">
+      <button class="btn btn-secondary" (click)="closeModal()">Hủy</button>
+      <button class="btn btn-primary" (click)="confirmPayment()">Xác nhận</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal xem chi tiết đơn hàng -->
+<div class="modal" *ngIf="selectedDetailOrder" >
+  <div class="modal-content">
+    <h3>Chi tiết đơn hàng</h3>
+    <p><strong>Khách hàng:</strong> {{ selectedDetailOrder.customer.name }}</p>
+    <p><strong>Trạng thái:</strong> {{ selectedDetailOrder.status | titlecase }}</p>
+
+    <!-- Sản phẩm trong đơn hiện tại -->
+    <h5>Sản phẩm trong đơn:</h5>
+    <table class="table mt-2">
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>Sản phẩm</th>
+          <th>Loại</th>
+          <th>Số lượng</th>
+          <th>Đơn giá</th>
+          <th>Thành tiền</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of selectedDetailOrder.items; index as i">
+          <td>{{ i + 1 }}</td>
+          <td>{{ item.product.name }}</td>
+          <td>{{ item.product.category.name }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>{{ item.product.price | number:'1.0-2' }} VND</td>
+          <td>{{ item.quantity * item.product.price | number:'1.0-2' }} VND</td>
+
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="mt-2"><strong>Tổng tiền đơn hiện tại:</strong> {{ selectedDetailOrder.totalAmount | number:'1.0-2'}} VND</p>
+
+    <div class="modal-actions mt-3">
+      <button class="btn btn-secondary" (click)="closeDetailModal()">Đóng</button>
+    </div>
+  </div>
+</div>

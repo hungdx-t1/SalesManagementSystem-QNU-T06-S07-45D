@@ -1,0 +1,25 @@
+<div class="register-container">
+  <h2>Register</h2>
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+
+    <div>
+      <label>Username</label>
+      <input type="text" formControlName="username">
+    </div>
+
+    <div>
+      <label>Password</label>
+      <input type="password" formControlName="password">
+    </div>
+
+    <div>
+      <label>Full Name</label>
+      <input type="text" formControlName="fullName">
+    </div>
+
+    <button type="submit" [disabled]="registerForm.invalid">Register</button>
+  </form>
+
+  <div *ngIf="errorMessage" style="color:red">{{ errorMessage }}</div>
+  <div *ngIf="successMessage" style="color:green">{{ successMessage }}</div>
+</div>
