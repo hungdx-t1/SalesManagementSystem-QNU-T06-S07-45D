@@ -8,7 +8,8 @@ import { AuthLayout } from './shared/layout/auth-layout/auth-layout';
 import { RegisterComponent } from './register/register';
 import { Customer } from './page/customer/customer';
 import { Product } from './page/product/product';
-
+import { Inventory } from './page/inventory/inventory';
+import { SumInventoryComponent } from './page/sum-inventory/sum-inventory';
 export const routes: Routes = [
   {
     path: '',
@@ -16,7 +17,9 @@ export const routes: Routes = [
     children: [
       { path: 'order-pos', component: OrderPos },
       { path: 'customer', component: Customer},
-      { path: 'product', component: Product}
+      { path: 'product', component: Product},
+      { path: 'sumInventory', component: SumInventoryComponent },
+      { path: 'inventory', component: Inventory}
     ]
   },
   {
